@@ -33,26 +33,66 @@ namespace Ardin.GSAManager
                 var ser = Process.GetProcessesByName("Search_Engine_Ranker").FirstOrDefault();
                 if (ser != null)
                 {
-                    ser.Kill();
-                    Log("Ser process killed");
+                    try
+                    {
+                        ser.Kill();
+                        Log("Ser process killed");
+                    }
+                    catch (Exception ex)
+                    {
+                        if(MessageBox.Show(ex.Message) == DialogResult.OK)
+                        {
+                            Log("Continue " + ex.Message);
+                        }
+                    }
                 }
                 var cb = Process.GetProcessesByName("GSA_CapBreak").FirstOrDefault();
                 if (cb != null)
                 {
-                    cb.Kill();
-                    Log("Cb killed");
+                    try
+                    {
+                        cb.Kill();
+                        Log("Cb killed");
+                    }
+                    catch (Exception ex)
+                    {
+                        if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                        {
+                            Log("Continue " + ex.Message);
+                        }
+                    }
                 }
                 var serAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GSA Search Engine Ranker");
                 if (Directory.Exists(serAppDataPath))
                 {
-                    Directory.Delete(serAppDataPath, true);
-                    Log("Ser app data files deleted");
+                    try
+                    {
+                        Directory.Delete(serAppDataPath, true);
+                        Log("Ser app data files deleted");
+                    }
+                    catch (Exception ex)
+                    {
+                        if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                        {
+                            Log("Continue " + ex.Message);
+                        }
+                    }
                 }
                 var serProgramfilesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GSA Search Engine Ranker");
                 if (Directory.Exists(serProgramfilesPath))
                 {
-                    Directory.Delete(serProgramfilesPath, true);
-                    Log("Ser program files deleted");
+                    try
+                    {
+                        Directory.Delete(serProgramfilesPath, true);
+                        Log("Ser program files deleted");
+                    }
+                    catch (Exception ex)
+                    {
+                        if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                        {
+                            Log("Continue " + ex.Message);
+                        }
+                    }
                 }
 
                 if (!cbCBDownload.Checked)
@@ -66,14 +106,34 @@ namespace Ardin.GSAManager
                     var cbAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GSA Captcha Breaker");
                     if (Directory.Exists(cbAppDataPath))
                     {
-                        Directory.Delete(cbAppDataPath, true);
-                        Log("CB app data files deleted");
+                        try
+                        {
+                            Directory.Delete(cbAppDataPath, true);
+                            Log("CB app data files deleted");
+                        }
+                        catch (Exception ex)
+                        {
+                            if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                            {
+                                Log("Continue " + ex.Message);
+                            }
+                        }
                     }
                     var cbProgramfilesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GSA Captcha Breaker");
                     if (Directory.Exists(cbProgramfilesPath))
                     {
-                        Directory.Delete(cbProgramfilesPath, true);
-                        Log("CB program files deleted");
+                        try
+                        {
+                            Directory.Delete(cbProgramfilesPath, true);
+                            Log("CB program files deleted");
+                        }
+                        catch (Exception ex)
+                        {
+                            if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                            {
+                                Log("Continue " + ex.Message);
+                            }
+                        }
                     }
                 }
 
@@ -86,7 +146,19 @@ namespace Ardin.GSAManager
                 System.IO.Compression.ZipFile.ExtractToDirectory(@"C:\GSA\ser_setup.zip", @"C:\GSA");
                 string zipFile = @"C:\GSA\ser_setup.zip";
                 if (File.Exists(zipFile))
-                    File.Delete(zipFile);
+                {
+                    try
+                    {
+                        File.Delete(zipFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                        {
+                            Log("Continue " + ex.Message);
+                        }
+                    }
+                }
                 Log("New version of Ser " + (cbCBDownload.Checked ? "and CB " : "") + "downloaded and extracted");
                 ProcessStartInfo startInfo = new ProcessStartInfo()
                 {
