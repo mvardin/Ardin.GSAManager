@@ -37,6 +37,8 @@ namespace Ardin.GSAManager
             this.label1 = new System.Windows.Forms.Label();
             this.lblCbStatus = new System.Windows.Forms.Label();
             this.cbCBDownload = new System.Windows.Forms.CheckBox();
+            this.cbRestart = new System.Windows.Forms.CheckBox();
+            this.cbSERDownload = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnStart
@@ -110,18 +112,43 @@ namespace Ardin.GSAManager
             // cbCBDownload
             // 
             this.cbCBDownload.AutoSize = true;
-            this.cbCBDownload.Location = new System.Drawing.Point(12, 46);
+            this.cbCBDownload.Location = new System.Drawing.Point(289, 46);
             this.cbCBDownload.Name = "cbCBDownload";
             this.cbCBDownload.Size = new System.Drawing.Size(98, 19);
             this.cbCBDownload.TabIndex = 4;
             this.cbCBDownload.Text = "Download CB";
             this.cbCBDownload.UseVisualStyleBackColor = true;
             // 
+            // cbRestart
+            // 
+            this.cbRestart.AutoSize = true;
+            this.cbRestart.Checked = true;
+            this.cbRestart.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbRestart.Enabled = false;
+            this.cbRestart.Location = new System.Drawing.Point(12, 46);
+            this.cbRestart.Name = "cbRestart";
+            this.cbRestart.Size = new System.Drawing.Size(62, 19);
+            this.cbRestart.TabIndex = 4;
+            this.cbRestart.Text = "Restart";
+            this.cbRestart.UseVisualStyleBackColor = true;
+            // 
+            // cbSERDownload
+            // 
+            this.cbSERDownload.AutoSize = true;
+            this.cbSERDownload.Location = new System.Drawing.Point(131, 46);
+            this.cbSERDownload.Name = "cbSERDownload";
+            this.cbSERDownload.Size = new System.Drawing.Size(102, 19);
+            this.cbSERDownload.TabIndex = 4;
+            this.cbSERDownload.Text = "Download SER";
+            this.cbSERDownload.UseVisualStyleBackColor = true;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.cbSERDownload);
+            this.Controls.Add(this.cbRestart);
             this.Controls.Add(this.cbCBDownload);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.lblCbStatus);
@@ -147,6 +174,8 @@ namespace Ardin.GSAManager
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblCbStatus;
         private System.Windows.Forms.CheckBox cbCBDownload;
+        private System.Windows.Forms.CheckBox cbRestart;
+        private System.Windows.Forms.CheckBox cbSERDownload;
     }
 }
 

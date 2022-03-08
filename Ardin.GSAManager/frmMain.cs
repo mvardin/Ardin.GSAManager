@@ -29,197 +29,219 @@ namespace Ardin.GSAManager
         {
             Task.Run(() =>
             {
-                Log("Start");
-                var ser = Process.GetProcessesByName("Search_Engine_Ranker").FirstOrDefault();
-                if (ser != null)
+                if (cbRestart.Checked)
                 {
-                    try
-                    {
-                        ser.Kill();
-                        Log("Ser process killed");
-                    }
-                    catch (Exception ex)
-                    {
-                        if(MessageBox.Show(ex.Message) == DialogResult.OK)
-                        {
-                            Log("Continue " + ex.Message);
-                        }
-                    }
-                }
-                var cb = Process.GetProcessesByName("GSA_CapBreak").FirstOrDefault();
-                if (cb != null)
-                {
-                    try
-                    {
-                        cb.Kill();
-                        Log("Cb killed");
-                    }
-                    catch (Exception ex)
-                    {
-                        if (MessageBox.Show(ex.Message) == DialogResult.OK)
-                        {
-                            Log("Continue " + ex.Message);
-                        }
-                    }
-                }
-                var serAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GSA Search Engine Ranker");
-                if (Directory.Exists(serAppDataPath))
-                {
-                    try
-                    {
-                        Directory.Delete(serAppDataPath, true);
-                        Log("Ser app data files deleted");
-                    }
-                    catch (Exception ex)
-                    {
-                        if (MessageBox.Show(ex.Message) == DialogResult.OK)
-                        {
-                            Log("Continue " + ex.Message);
-                        }
-                    }
-                }
-                var serProgramfilesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GSA Search Engine Ranker");
-                if (Directory.Exists(serProgramfilesPath))
-                {
-                    try
-                    {
-                        Directory.Delete(serProgramfilesPath, true);
-                        Log("Ser program files deleted");
-                    }
-                    catch (Exception ex)
-                    {
-                        if (MessageBox.Show(ex.Message) == DialogResult.OK)
-                        {
-                            Log("Continue " + ex.Message);
-                        }
-                    }
-                }
+                    Log("Start");
 
-                if (!cbCBDownload.Checked)
-                {
-                    Log("Try to run Cb");
-                    Process.Start(@"C:\Program Files (x86)\GSA Captcha Breaker\GSA_CapBreak.exe");
-                    Log("Cb started");
+                    #region Kill processes
+                    var ser = Process.GetProcessesByName("Search_Engine_Ranker").FirstOrDefault();
+                    if (ser != null)
+                    {
+                        try
+                        {
+                            ser.Kill();
+                            Log("Ser process killed");
+                        }
+                        catch (Exception ex)
+                        {
+                            if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                            {
+                                Log("Continue " + ex.Message);
+                            }
+                        }
+                    }
+                    var cb = Process.GetProcessesByName("GSA_CapBreak").FirstOrDefault();
+                    if (cb != null)
+                    {
+                        try
+                        {
+                            cb.Kill();
+                            Log("CB killed");
+                        }
+                        catch (Exception ex)
+                        {
+                            if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                            {
+                                Log("Continue " + ex.Message);
+                            }
+                        }
+                    }
+                    #endregion
+
+                    if (cbCBDownload.Checked)
+                    {
+                        //remove app data
+                        var cbAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GSA Captcha Breaker");
+                        if (Directory.Exists(cbAppDataPath))
+                        {
+                            try
+                            {
+                                Directory.Delete(cbAppDataPath, true);
+                                Log("CB app data files deleted");
+                            }
+                            catch (Exception ex)
+                            {
+                                if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                                {
+                                    Log("Continue " + ex.Message);
+                                }
+                            }
+                        }
+                        Log("CB App data deleted");
+
+                        //remove program files
+                        var cbProgramfilesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GSA Captcha Breaker");
+                        if (Directory.Exists(cbProgramfilesPath))
+                        {
+                            try
+                            {
+                                Directory.Delete(cbProgramfilesPath, true);
+                                Log("CB program files deleted");
+                            }
+                            catch (Exception ex)
+                            {
+                                if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                                {
+                                    Log("Continue " + ex.Message);
+                                }
+                            }
+                        }
+                        Log("CB program files deleted");
+
+                        //download
+                        Log("CB Start downloading");
+                        string cBFile = @"C:\GSA\captcha_breaker.exe";
+                        if (File.Exists(cBFile))
+                            File.Delete(cBFile);
+                        CBDownloadCompleted = false;
+                        WebClient webClientCb = new WebClient();
+                        webClientCb.DownloadProgressChanged += WebClientSb_DownloadProgressChanged;
+                        webClientCb.DownloadFileCompleted += WebClientCb_DownloadFileCompleted;
+                        webClientCb.DownloadFileAsync(new Uri("https://www.gsa-online.de/download/captcha_breaker.exe"), cBFile);
+                        while (!CBDownloadCompleted)
+                        {
+                            Thread.Sleep(1000);
+                        }
+                        Log("CB finish downloading");
+
+                        //install
+                        Log("CB starting");
+                        ProcessStartInfo startInfo = new ProcessStartInfo()
+                        {
+                            FileName = cBFile
+                        };
+                        Process.Start(startInfo);
+                        Log("CB started");
+                    }
+                    else
+                    {
+                        Log("CB starting");
+                        Process.Start(@"C:\Program Files (x86)\GSA Captcha Breaker\GSA_CapBreak.exe");
+                        Log("Cb started");
+                    }
+
+                    if (cbSERDownload.Checked)
+                    {
+                        //remove app data
+                        var serAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GSA Search Engine Ranker");
+                        if (Directory.Exists(serAppDataPath))
+                        {
+                            try
+                            {
+                                Directory.Delete(serAppDataPath, true);
+                                Log("Ser app data files deleted");
+                            }
+                            catch (Exception ex)
+                            {
+                                if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                                {
+                                    Log("Continue " + ex.Message);
+                                }
+                            }
+                        }
+                        Log("Ser app data deleted");
+
+                        //remove program files
+                        var serProgramfilesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GSA Search Engine Ranker");
+                        if (Directory.Exists(serProgramfilesPath))
+                        {
+                            try
+                            {
+                                Directory.Delete(serProgramfilesPath, true);
+                                Log("Ser program files deleted");
+                            }
+                            catch (Exception ex)
+                            {
+                                if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                                {
+                                    Log("Continue " + ex.Message);
+                                }
+                            }
+                        }
+                        Log("Ser program files deleted");
+
+                        //download
+                        string serZipFile = @"C:\GSA\ser_setup.zip";
+                        string serExtractedFile = @"C:\GSA\ser_setup.exe";
+
+                        if (File.Exists(serZipFile))
+                            File.Delete(serZipFile);
+                        if (File.Exists(serExtractedFile))
+                            File.Delete(serExtractedFile);
+
+                        Log("Ser start downloading");
+                        SerDownloadCompleted = false;
+                        WebClient webClientSer = new WebClient();
+                        webClientSer.DownloadProgressChanged += WebClientSer_DownloadProgressChanged;
+                        webClientSer.DownloadFileCompleted += WebClientSer_DownloadFileCompleted;
+                        webClientSer.DownloadFileAsync(new Uri("https://www.gsa-online.de/download/ser_setup.zip"), serZipFile);
+                        while (!SerDownloadCompleted)
+                        {
+                            Thread.Sleep(1000);
+                        }
+                        Log("Ser downloaded");
+
+                        //install
+                        System.IO.Compression.ZipFile.ExtractToDirectory(@"C:\GSA\ser_setup.zip", @"C:\GSA");
+                        string zipFile = @"C:\GSA\ser_setup.zip";
+                        if (File.Exists(zipFile))
+                        {
+                            try
+                            {
+                                File.Delete(zipFile);
+                            }
+                            catch (Exception ex)
+                            {
+                                if (MessageBox.Show(ex.Message) == DialogResult.OK)
+                                {
+                                    Log("Continue " + ex.Message);
+                                }
+                            }
+                        }
+                        Log("Ser unzipped");
+
+                        ProcessStartInfo startInfo = new ProcessStartInfo()
+                        {
+                            FileName = "C:\\GSA\\ser_setup.exe"
+                        };
+                        Process.Start(startInfo);
+                        Log("Ser finished");
+                    }
+                    else
+                    {
+                        Log("Ser starting");
+                        Process.Start(@"C:\Program Files (x86)\GSA Search Engine Ranker\Search_Engine_Ranker.exe");
+                        Log("Ser started");
+                    }
                 }
                 else
                 {
-                    var cbAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GSA Captcha Breaker");
-                    if (Directory.Exists(cbAppDataPath))
-                    {
-                        try
-                        {
-                            Directory.Delete(cbAppDataPath, true);
-                            Log("CB app data files deleted");
-                        }
-                        catch (Exception ex)
-                        {
-                            if (MessageBox.Show(ex.Message) == DialogResult.OK)
-                            {
-                                Log("Continue " + ex.Message);
-                            }
-                        }
-                    }
-                    var cbProgramfilesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GSA Captcha Breaker");
-                    if (Directory.Exists(cbProgramfilesPath))
-                    {
-                        try
-                        {
-                            Directory.Delete(cbProgramfilesPath, true);
-                            Log("CB program files deleted");
-                        }
-                        catch (Exception ex)
-                        {
-                            if (MessageBox.Show(ex.Message) == DialogResult.OK)
-                            {
-                                Log("Continue " + ex.Message);
-                            }
-                        }
-                    }
-                }
-
-                Download();
-                while (!SerDownloadCompleted || !CBDownloadCompleted)
-                {
-                    Thread.Sleep(1000);
-                }
-
-                System.IO.Compression.ZipFile.ExtractToDirectory(@"C:\GSA\ser_setup.zip", @"C:\GSA");
-                string zipFile = @"C:\GSA\ser_setup.zip";
-                if (File.Exists(zipFile))
-                {
-                    try
-                    {
-                        File.Delete(zipFile);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (MessageBox.Show(ex.Message) == DialogResult.OK)
-                        {
-                            Log("Continue " + ex.Message);
-                        }
-                    }
-                }
-                Log("New version of Ser " + (cbCBDownload.Checked ? "and CB " : "") + "downloaded and extracted");
-                ProcessStartInfo startInfo = new ProcessStartInfo()
-                {
-                    FileName = "C:\\GSA\\ser_setup.exe"
-                };
-                Process.Start(startInfo);
-                if (cbCBDownload.Checked)
-                {
-                    startInfo = new ProcessStartInfo()
-                    {
-                        FileName = "C:\\GSA\\captcha_breaker.exe"
-                    };
-                    Process.Start(startInfo);
-                }
-                if (MessageBox.Show("Compelete setup and then press okey", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
-                {
-                    Process.Start(@"C:\Program Files (x86)\GSA Search Engine Ranker\Search_Engine_Ranker.exe");
-                    if (cbCBDownload.Checked)
-                        Process.Start(@"C:\Program Files (x86)\GSA Captcha Breaker\GSA_CapBreak.exe");
+                    Log("Nothing");
                 }
                 Log("Finish");
             });
         }
 
-        private void Download()
-        {
-            try
-            {
-                string serZipFile = @"C:\GSA\ser_setup.zip";
-                string cBExtractedFile = @"C:\GSA\captcha_breaker.exe";
-                string serExtractedFile = @"C:\GSA\ser_setup.exe";
-
-                if (File.Exists(serZipFile))
-                    File.Delete(serZipFile);
-                if (File.Exists(serExtractedFile))
-                    File.Delete(serExtractedFile);
-                if (cbCBDownload.Checked)
-                {
-                    if (File.Exists(cBExtractedFile))
-                        File.Delete(cBExtractedFile);
-                }
-                Log("Start downloading new version of Ser " + (cbCBDownload.Checked ? " and Cb" : ""));
-                WebClient webClientSer = new WebClient();
-                webClientSer.DownloadProgressChanged += WebClientSer_DownloadProgressChanged;
-                webClientSer.DownloadFileCompleted += WebClientSer_DownloadFileCompleted;
-                webClientSer.DownloadFileAsync(new Uri("https://www.gsa-online.de/download/ser_setup.zip"), serZipFile);
-
-                if (cbCBDownload.Checked)
-                {
-                    WebClient webClientCb = new WebClient();
-                    webClientCb.DownloadProgressChanged += WebClientSb_DownloadProgressChanged;
-                    webClientCb.DownloadFileCompleted += WebClientCb_DownloadFileCompleted;
-                    webClientCb.DownloadFileAsync(new Uri("https://www.gsa-online.de/download/captcha_breaker.exe"), cBExtractedFile);
-                }
-                else CBDownloadCompleted = true;
-            }
-            catch (Exception ex)
-            {
-                Log("Download ser failed", ex);
-            }
-        }
         private void WebClientCb_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             CBDownloadCompleted = true;
