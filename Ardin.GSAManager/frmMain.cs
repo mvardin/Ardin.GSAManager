@@ -336,10 +336,16 @@ namespace Ardin.GSAManager
         private void _timer_Tick(object sender, EventArgs e)
         {
             Log("Start clicking");
+            //click on ser licence
             ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_Licence);
+            //probebly captcha licence
+            Thread.Sleep(2 * 1000);
+            ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_Licence);
+            //click on stop
             Thread.Sleep(5 * 1000);
             ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_StopStart);
-            Thread.Sleep(5 * 1000);
+            //click on start
+            Thread.Sleep(10 * 1000);
             ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_StopStart);
             Log("Finish clicking");
         }
