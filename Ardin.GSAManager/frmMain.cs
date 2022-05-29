@@ -318,27 +318,30 @@ namespace Ardin.GSAManager
         }
         private void btnStartTimer_Click(object sender, EventArgs e)
         {
-            if (btnStart.Text == "Start")
+            if (btnStartTimer.Text == "Start")
             {
                 Log("Auto click started");
-                btnStart.Text = "Stop";
+                btnStartTimer.Text = "Stop";
                 _timer.Start();
+                _timer_Tick(sender, e);
             }
             else
             {
                 Log("Auto click stoped");
-                btnStart.Text = "Start";
+                btnStartTimer.Text = "Start";
                 _timer.Stop();
             }
         }
 
         private void _timer_Tick(object sender, EventArgs e)
         {
+            Log("Start clicking");
             ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_Licence);
             Thread.Sleep(5 * 1000);
             ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_StopStart);
             Thread.Sleep(5 * 1000);
             ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_StopStart);
+            Log("Finish clicking");
         }
     }
 }
