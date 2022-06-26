@@ -22,12 +22,37 @@ namespace Ardin.GSAManager
     {
         public bool SerDownloadCompleted { get; set; }
         public bool CBDownloadCompleted { get; set; }
+        Timer _timerCaptcha;
+
         public frmMain()
         {
             InitializeComponent();
             _timer = new Timer();
             _timer.Interval = Convert.ToInt32(ConfigurationManager.AppSettings["StopStartInterval"]);
             _timer.Tick += _timer_Tick;
+
+            _timerCaptcha = new Timer();
+            _timerCaptcha.Interval = 10 * 60 * 1000;
+            _timerCaptcha.Tick += _timerCaptcha_Tick;
+        }
+
+        private void _timerCaptcha_Tick(object sender, EventArgs e)
+        {
+            var cb = Process.GetProcessesByName("GSA_CapBreak").FirstOrDefault();
+            if (cb != null)
+            {
+                try
+                {
+                    cb.Kill();
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            Thread.Sleep(5 * 1000);
+            Process.Start(@"C:\Program Files (x86)\GSA Captcha Breaker\GSA_CapBreak.exe");
+            Thread.Sleep(5 * 1000);
+            Log("Captcha Service has been restarted ...");
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -335,19 +360,38 @@ namespace Ardin.GSAManager
 
         private void _timer_Tick(object sender, EventArgs e)
         {
-            Log("Start clicking");
-            //click on ser licence
-            ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_Licence);
-            //probebly captcha licence
-            Thread.Sleep(2 * 1000);
-            ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_Licence);
-            //click on stop
-            Thread.Sleep(5 * 1000);
-            ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_StopStart);
-            //click on start
-            Thread.Sleep(10 * 1000);
-            ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_StopStart);
-            Log("Finish clicking");
+            Task.Run(() =>
+            {
+                Log("Start refreshing");
+                ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_Licence);
+                Thread.Sleep(2 * 1000);
+                ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_Licence);
+                Thread.Sleep(5 * 1000);
+                ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_StopStart);
+                Thread.Sleep(10 * 1000);
+                ClickOnPointTool.ClickOnPoint(IntPtr.Zero, Cursor_StopStart);
+                var cb = Process.GetProcessesByName("GSA_CapBreak").FirstOrDefault();
+                if (cb != null)
+                {
+                    try
+                    {
+                        cb.Kill();
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+                Thread.Sleep(5 * 1000);
+                Process.Start(@"C:\Program Files (x86)\GSA Captcha Breaker\GSA_CapBreak.exe");
+                Thread.Sleep(5 * 1000);
+                Log("Finish refreshing");
+            });
+        }
+
+        private void btnRestartCaptchaService_Click(object sender, EventArgs e)
+        {
+            btnRestartCaptchaService.Enabled = false;
+            _timerCaptcha.Start();
         }
     }
 }

@@ -41,6 +41,7 @@ namespace Ardin.GSAManager
             this.cbSERDownload = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.btnStartTimer = new System.Windows.Forms.Button();
+            this.btnRestartCaptchaService = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnStart
@@ -163,11 +164,22 @@ namespace Ardin.GSAManager
             this.btnStartTimer.UseVisualStyleBackColor = true;
             this.btnStartTimer.Click += new System.EventHandler(this.btnStartTimer_Click);
             // 
+            // btnRestartCaptchaService
+            // 
+            this.btnRestartCaptchaService.Location = new System.Drawing.Point(430, 12);
+            this.btnRestartCaptchaService.Name = "btnRestartCaptchaService";
+            this.btnRestartCaptchaService.Size = new System.Drawing.Size(146, 23);
+            this.btnRestartCaptchaService.TabIndex = 7;
+            this.btnRestartCaptchaService.Text = "Restart Captcha Service";
+            this.btnRestartCaptchaService.UseVisualStyleBackColor = true;
+            this.btnRestartCaptchaService.Click += new System.EventHandler(this.btnRestartCaptchaService_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnRestartCaptchaService);
             this.Controls.Add(this.btnStartTimer);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.cbSERDownload);
@@ -201,6 +213,7 @@ namespace Ardin.GSAManager
         private System.Windows.Forms.CheckBox cbSERDownload;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnStartTimer;
+        private System.Windows.Forms.Button btnRestartCaptchaService;
     }
 }
 
