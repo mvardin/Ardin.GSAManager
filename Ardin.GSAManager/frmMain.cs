@@ -27,33 +27,19 @@ namespace Ardin.GSAManager
         public frmMain()
         {
             InitializeComponent();
-            _timer = new Timer();
-            _timer.Interval = Convert.ToInt32(ConfigurationManager.AppSettings["StopStartInterval"]);
+            _timer = new Timer
+            {
+                Interval = Convert.ToInt32(ConfigurationManager.AppSettings["StopStartInterval"])
+            };
             _timer.Tick += _timer_Tick;
 
-            _timerCaptcha = new Timer();
-            _timerCaptcha.Interval = 10 * 60 * 1000;
+            _timerCaptcha = new Timer
+            {
+                Interval = 1 * 60 * 60 * 1000
+            };
             _timerCaptcha.Tick += _timerCaptcha_Tick;
         }
 
-        private void _timerCaptcha_Tick(object sender, EventArgs e)
-        {
-            var cb = Process.GetProcessesByName("GSA_CapBreak").FirstOrDefault();
-            if (cb != null)
-            {
-                try
-                {
-                    cb.Kill();
-                }
-                catch (Exception ex)
-                {
-                }
-            }
-            Thread.Sleep(5 * 1000);
-            Process.Start(@"C:\Program Files (x86)\GSA Captcha Breaker\GSA_CapBreak.exe");
-            Thread.Sleep(5 * 1000);
-            Log("Captcha Service has been restarted ...");
-        }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
@@ -387,9 +373,39 @@ namespace Ardin.GSAManager
                 Log("Finish refreshing");
             });
         }
+        private void _timerCaptcha_Tick(object sender, EventArgs e)
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    Log("Captcha Service restating...");
+                    var cbList = Process.GetProcessesByName("GSA_CapBreak");
+                    foreach (var cb in cbList)
+                    {
+                        try
+                        {
+                            cb.Kill();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("killing cb", ex);
+                        }
+                    }
+                    Thread.Sleep(10 * 1000);
+                    Process.Start(@"C:\Program Files (x86)\GSA Captcha Breaker\GSA_CapBreak.exe");
+                    Log("Captcha Service has been restarted ...");
+                }
+                catch (Exception ex)
+                {
+                    Log("captcha timer", ex);
+                }
+            });
+        }
 
         private void btnRestartCaptchaService_Click(object sender, EventArgs e)
         {
+            _timerCaptcha_Tick(sender, e);
             btnRestartCaptchaService.Enabled = false;
             _timerCaptcha.Start();
         }
